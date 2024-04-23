@@ -32,37 +32,40 @@ public class DAOFactory extends SQLiteOpenHelper {
     private static final int CSV_DATA_FIELDS = 6;
 
     public DAOFactory(Context context) {
-
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
-
         properties = new DAOProperties(context, DATABASE_NAME);
-
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.d("DAOFactory", "onCreate method called");
 
+        Log.d("DAOFactory", "Creating puzzles table");
         db.execSQL(properties.getProperty("sql_create_puzzles_table"));
+
+        Log.d("DAOFactory", "Creating words table");
         db.execSQL(properties.getProperty("sql_create_words_table"));
+
+        Log.d("DAOFactory", "Creating guesses table");
         db.execSQL(properties.getProperty("sql_create_guesses_table"));
 
         PuzzleDAO puzzleDAO = new PuzzleDAO(this);
 
+        Log.d("DAOFactory", "Adding initial data from CSV");
         addInitialDataFromCSV(db);
-
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
         db.execSQL(properties.getProperty("sql_drop_guesses_table"));
         db.execSQL(properties.getProperty("sql_drop_words_table"));
         db.execSQL(properties.getProperty("sql_drop_puzzles_table"));
 
         onCreate(db);
-
     }
+
 
     public PuzzleDAO getPuzzleDAO() {
         return new PuzzleDAO(this);
@@ -78,6 +81,8 @@ public class DAOFactory extends SQLiteOpenHelper {
 
     public int addInitialDataFromCSV(SQLiteDatabase db) {
 
+        Log.d("DAOFactory", "addInitialDataFromCSV method called");  // Log to check if method is being called
+
         int puzzleid = 0;
 
         /* populate initial database from CSV data file */
@@ -87,10 +92,14 @@ public class DAOFactory extends SQLiteOpenHelper {
             WordDAO wordDAO = getWordDAO();
             PuzzleDAO puzzleDAO = getPuzzleDAO();
 
+            Log.d("DAOFactory", "DAOs created");  // Log to check if DAOs are created
+
             BufferedReader br = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(R.raw.puzzle)));
             CSVParser parser = (new CSVParserBuilder()).withSeparator('\t').withIgnoreQuotations(true).build();
             CSVReader reader = (new CSVReaderBuilder(br)).withCSVParser(parser).build();
             List<String[]> csv = reader.readAll();
+
+            Log.d("DAOFactory", "CSV read");  // Log to check if CSV is read
 
             String[] fields = csv.get(0);
 
@@ -107,6 +116,7 @@ public class DAOFactory extends SQLiteOpenHelper {
                 params.put(properties.getProperty("sql_field_width"), fields[3]);
 
                 puzzleid = puzzleDAO.create(db, params);
+                Log.d("DAOFactory", "Inserted new puzzle with ID: " + puzzleid);
 
                 for (int i = 1; i < csv.size(); ++i) {
 
@@ -116,13 +126,15 @@ public class DAOFactory extends SQLiteOpenHelper {
 
                         params = new HashMap<>();
 
-                        /*
-
-                        INSERT YOUR CODE HERE
-
-                         */
+                        params.put(properties.getProperty("sql_field_row"), fields[0]);
+                        params.put(properties.getProperty("sql_field_column"), fields[1]);
+                        params.put(properties.getProperty("sql_field_box"), fields[2]);
+                        params.put(properties.getProperty("sql_field_direction"), fields[3]);
+                        params.put(properties.getProperty("sql_field_word"), fields[4]);
+                        params.put(properties.getProperty("sql_field_clue"), fields[5]);
 
                         wordDAO.create(db, params);
+                        Log.d("DAOFactory", "Inserted word: " + params.get(properties.getProperty("sql_field_word")));
 
                     }
 
@@ -134,11 +146,14 @@ public class DAOFactory extends SQLiteOpenHelper {
 
         }
         catch (Exception e) {
+            Log.e("DAOFactory", "Error adding initial data from CSV", e);
             e.printStackTrace();
         }
 
         return puzzleid;
 
     }
+
+
 
 }

@@ -1,5 +1,7 @@
 package edu.jsu.mcis.cs408.crosswordmagic.model;
 
+import android.util.Log;
+
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -52,25 +54,26 @@ public class Puzzle {
 
     }
 
-    public void addWordToPuzzle(Word word) {
+   /* public void addWordToPuzzle(Word word) {
+        Log.d("Puzzle", "Adding word to puzzle: " + word.toString());
 
         String key = (word.getBox() + word.getDirection().toString());
 
-        /* add to collection */
+        add to collection
 
         words.put(key, word);
 
-        /* get word properties */
+         get word properties
 
         int row = word.getRow();
         int column = word.getColumn();
         int length = word.getWord().length();
 
-        /* add box number to grid of numbers */
+         add box number to grid of numbers
 
         numbers[row][column] = word.getBox();
 
-        /* "hollow out" letters; replace with blanks */
+         "hollow out" letters; replace with blanks
 
         for (int i = 0; i < length; ++i) {
 
@@ -83,7 +86,7 @@ public class Puzzle {
 
         }
 
-        /* append clue (across or down) to corresponding StringBuilder */
+        append clue (across or down) to corresponding StringBuilder
 
         if (word.isAcross()) {
             cluesAcrossBuffer.append(word.getBox()).append(": ");
@@ -95,12 +98,12 @@ public class Puzzle {
             cluesDownBuffer.append(word.getClue()).append(System.lineSeparator());
         }
 
-        /* add word to guessed list (for development only!) */
+         //add word to guessed list (for development only!)
 
-        addWordToGuessed(key); // remove this later!
+        //addWordToGuessed(key); // remove this later!
 
     }
-
+*/
     public WordDirection checkGuess(Integer num, String guess) {
 
         WordDirection result = null;
@@ -118,14 +121,14 @@ public class Puzzle {
         if (across != null) {
             if (across.getWord().equals(guess) && !(guessed.contains(acrossKey))) {
                 result = WordDirection.ACROSS;
-                addWordToGuessed(downKey);
+                //addWordToGuessed(downKey);
             }
         }
 
         if (down != null) {
             if (down.getWord().equals(guess) && !(guessed.contains(downKey))) {
                 result = WordDirection.DOWN;
-                addWordToGuessed(downKey);
+                //addWordToGuessed(downKey);
             }
         }
 
@@ -153,20 +156,20 @@ public class Puzzle {
 
     }
 
-    public void addWordToGuessed(String key) {
+    /*public void addWordToGuessed(String key) {
 
         Word w = words.get(key);
 
         guessed.add(key);
 
-        /* get word properties */
+        get word properties
 
         int row = w.getRow();
         int column = w.getColumn();
         String word = w.getWord();
         int length = word.length();
 
-        /* place letters in letter grid */
+         place letters in letter grid
 
         for (int i = 0; i < length; ++i) {
 
@@ -180,7 +183,7 @@ public class Puzzle {
         }
 
     }
-
+*/
     public Word getWord(String key) {
         return words.get(key);
     }

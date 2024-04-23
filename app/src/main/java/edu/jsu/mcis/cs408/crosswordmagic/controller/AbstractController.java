@@ -57,6 +57,14 @@ public abstract class AbstractController implements PropertyChangeListener {
 
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        /* get controller, register Fragment as a View */
+        this.controller = ((MainActivity)getContext()).getController();
+        controller.addView(this);
+    }
+
     protected void setModelProperty(String propertyName, Object newValue) {
 
         for (AbstractModel model : models) {
